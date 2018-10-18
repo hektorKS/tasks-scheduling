@@ -1,18 +1,17 @@
 import os
 
-from problems_reader import read
+from ProblemsReader import ProblemsReader
+
+BOUNDARY = 0.2
 
 
 def main():
     package_dir = os.path.dirname(os.path.abspath(__file__))
     file_path = os.path.join(package_dir, "../resources/sch10.txt")
-    problems = read(file_path)
-    print(problems)
+    problems = ProblemsReader.read(file_path, BOUNDARY)
     for problem in problems:
-        sum = 0
-        for task in problem.tasks:
-            sum += task.processing_time
-        print(sum)
+        print("Processing time: " + str(problem.problem_processing_time) +
+              ", Common due date: " + str(problem.common_due_date))
 
 
 if __name__ == "__main__":
