@@ -1,8 +1,8 @@
 import os
 
 from Problem import Problem
-from ProblemResolver import ProblemResolver
-from ProblemsReader import ProblemsReader
+from problemsolving.ProblemResolver import ProblemResolver
+from datareading.ProblemsReader import ProblemsReader
 
 BOUNDARY = 0.2
 FILE_PATH = "../resources/data/sch10.txt"
