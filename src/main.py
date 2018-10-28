@@ -1,35 +1,42 @@
-import os
-
-from Problem import Problem
-from problemsolving.ProblemResolver import ProblemResolver
-from datareading.ProblemsReader import ProblemsReader
-
-BOUNDARY = 0.2
-FILE_PATH = "../resources/data/sch10.txt"
-SOLUTIONS_FOLDER_PATH = "../resources/solutions/{}_{}_{}.txt"
-
-
-def get_solution_file_name_for_problem(problem: Problem):
-    file_name = FILE_PATH.split("/")[-1].split(".")[0]
-    return SOLUTIONS_FOLDER_PATH.format(file_name, problem.index, int(BOUNDARY * 10))
+import PathResolver
+from config.ConfigLoader import ConfigLoader
+from problem.ProblemsReader import ProblemsReader
+from problemsolving.ProblemSolver import ProblemSolver
+from solution.Solution import Solution
+from solution.SolutionReader import SolutionReader
+from solution.SolutionWriter import SolutionWriter
+from validation.SolutionValidator import SolutionValidator
 
 
-def get_current_directory():
-    return os.path.dirname(os.path.abspath(__file__))
+def solving(config):
+    # read problems from file
+    file_name = config["solving"]["file_name"]
+    problems_file_path = PathResolver.get_problem_file_absolute_path(file_name)
+    problems = ProblemsReader.read(problems_file_path, config["boundary"])
+    # solve problem
+    for index in config["solving"]["problems"]:
+        problem = problems[index]
+        solution = ProblemSolver.solve_with_permutations(problem)
+        # save solution
+        solution_file_name = Solution.get_file_name_for_solution(problem, config)
+        solution_file_path = PathResolver.get_solution_file_absolute_path(solution_file_name)
+        SolutionWriter.write(solution_file_path, solution)
+
+
+def validation(config):
+    # validate solution
+    file_name = config["validation"]["file_name"]
+    solution_file_path = PathResolver.get_validation_absolute_file_path(file_name)
+    solution = SolutionReader.read(solution_file_path)
+    validation_result = SolutionValidator.validate(solution)
+    print("Validation result for solution[{}]: {}".format(file_name, validation_result))
 
 
 def main():
-    package_dir = get_current_directory()
-    file_path = os.path.join(package_dir, FILE_PATH)
-    problems = ProblemsReader.read(file_path, BOUNDARY)
-    for problem in problems:
-        print("Index: {}, Processing time: {}, Common due date: {}"
-              .format(problem.index, problem.problem_processing_time, problem.common_due_date))
-
-    for problem in problems:
-        file_name = get_solution_file_name_for_problem(problem)
-        with open(file_name, 'w') as file:
-            file.write(str(ProblemResolver.resolve(problem)))
+    # read config
+    config = ConfigLoader.read()
+    solving(config)
+    # validation(config)
 
 
 if __name__ == "__main__":

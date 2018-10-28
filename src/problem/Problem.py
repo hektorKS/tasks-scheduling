@@ -15,3 +15,14 @@ class Problem:
         filtered_line_data = filter(lambda element: len(element) > 0, line.strip().split())
         data = list(map(lambda element: int(element), filtered_line_data))
         self.tasks.append(Task(index, data[0], data[1], data[2]))
+
+    def __str__(self):
+        return \
+            "Problem(\n  repr: [{}],\n  tasks: {},\n  common_due_date: {},\n  starting_point: {},\n  index: {}\n)" \
+            .format(
+                repr(self),
+                [str(task) for task in self.tasks],
+                self.common_due_date,
+                self.starting_point,
+                self.index
+            )

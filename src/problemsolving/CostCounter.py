@@ -1,10 +1,10 @@
-from Problem import Problem
-from Solution import Solution
+from problem.Problem import Problem
 
 
-class ProblemResolver:
+class CostCounter:
+
     @staticmethod
-    def resolve(problem: Problem):
+    def count(problem: Problem):
         cost = 0
         actual_point_in_time = problem.starting_point
         for task in problem.tasks:
@@ -15,4 +15,5 @@ class ProblemResolver:
             # Too early cost
             if task_end_point < problem.common_due_date:
                 cost += (problem.common_due_date - task_end_point) * task.too_early_penalty
-        return Solution(problem.tasks, problem.starting_point, cost)
+            actual_point_in_time += task.processing_time
+        return cost

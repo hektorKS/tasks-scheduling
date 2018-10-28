@@ -1,4 +1,4 @@
-from Problem import Problem
+from problem.Problem import Problem
 
 
 class ProblemsReader:

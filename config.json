@@ -1,0 +1,10 @@
+{
+  "boundary": 0.8,
+  "solving": {
+    "file_name": "sch10.txt",
+    "problems": [0]
+  },
+  "validation": {
+    "file_name": "sch10_0_2.txt"
+  }
+}
