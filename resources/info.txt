@@ -5,18 +5,21 @@
 3. n = 50,   k=9,  h=0.8
 5. n = 1000, k=5,  h=0.6
 
-// TODO
-- complexity O(n^2) max
--
-
-Mailem sprawozdanie:
-- imie nazwisko, numer albumu
-- 4 tabelki do przyszłych zajęć
-n = 10 h=0.5
-1   UPPER_BOUND FUNKCJA_CELU    BŁĄD W %(wzór w pdf R-upper_bound)    t(czas - powinien być mały)
-2
-3
-4
-5
-...
-10
+// Report
+Name, Last name, album number
+1. n = 10,   h=0.2
+2. n = 100,  h=0.4
+3. n = 500,  h=0.6
+4. n = 1000, h=0.8
+    k   |   Upper bound(R)  |   Funkcja celu(K)  |   Błąd względny  |   Czas
+----------------------------------------------------------------------------------
+ 1      |
+ 2      |
+ 3      |
+ 4      |
+ 5      |
+ 6      |
+ 7      |
+ 8      |
+ 9      |
+10      |

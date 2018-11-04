@@ -1,7 +1,6 @@
+import itertools
 import random
 from random import shuffle
-
-import itertools
 
 from problem.Problem import Problem
 from problemsolving.CostCounter import CostCounter
@@ -12,7 +11,45 @@ class ProblemSolver:
 
     @staticmethod
     def solve(problem: Problem):
-        return ProblemSolver.solve_random(problem)
+        return ProblemSolver.solve_smart(problem)
+
+    @staticmethod
+    def solve_smart(problem: Problem):
+        tasks = problem.tasks
+        # Sort decreasing considering (L-E)/T - cost per time unit
+        tasks = sorted(
+            tasks,
+            key=lambda item: (item.too_late_penalty - item.too_early_penalty) / item.processing_time,
+            reverse=True
+        )
+
+        # Split into two parts L and R considering CDD as split point
+        time_sum = 0
+        left_part = []
+        right_part = []
+        for task in tasks:
+            time_sum += task.processing_time
+            if time_sum < problem.common_due_date:
+                left_part.append(task)
+            else:
+                right_part.append(task)
+
+        # Sort left side by E/T - increasing cost per time unit for too early delay
+        left_part = sorted(left_part, key=lambda item: item.too_early_penalty / item.processing_time)
+        # Sort right side by L/T - decreasing cost per time unit for too late delay
+        right_part = sorted(right_part, key=lambda item: item.too_late_penalty / item.processing_time, reverse=True)
+        # Connect L and R
+        problem.tasks = left_part + right_part
+
+        # Move starting point from 0 to CDD searching for minimum cost
+        costs = []
+        for index in range(problem.common_due_date):
+            problem.starting_point = index
+            costs.append(CostCounter.count(problem))
+        min_cost_index = costs.index(min(costs))
+        problem.starting_point = min_cost_index
+
+        return Solution(problem, costs[min_cost_index])
 
     @staticmethod
     def solve_simple(problem: Problem):

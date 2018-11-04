@@ -1,3 +1,5 @@
+import time
+
 import PathResolver
 from config.ConfigLoader import ConfigLoader
 from problem.ProblemsReader import ProblemsReader
@@ -16,7 +18,9 @@ def solving(config):
     # solve problem
     for index in config["solving"]["problems"]:
         problem = problems[index - 1]
+        start_time = time.time()
         solution = ProblemSolver.solve(problem)
+        print("Processing time[{}]: {}s".format(index, round(time.time() - start_time, 5)))
         # save solution
         solution_file_name = Solution.get_file_name_for_solution(problem, config)
         solution_file_path = PathResolver.get_solution_file_absolute_path(solution_file_name)
