@@ -1,0 +1,22 @@
+// Lab3 tests
+1. n = 10    k=1,  h=0.2
+2. n = 10,   k=10, h=0.8
+4. n = 50,   k=2,  h=0.2
+3. n = 50,   k=9,  h=0.8
+5. n = 1000, k=5,  h=0.6
+
+// TODO
+- complexity O(n^2) max
+-
+
+Mailem sprawozdanie:
+- imie nazwisko, numer albumu
+- 4 tabelki do przyszłych zajęć
+n = 10 h=0.5
+1   UPPER_BOUND FUNKCJA_CELU    BŁĄD W %(wzór w pdf R-upper_bound)    t(czas - powinien być mały)
+2
+3
+4
+5
+...
+10

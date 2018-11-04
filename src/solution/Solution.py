@@ -13,4 +13,4 @@ class Solution:
     @staticmethod
     def get_file_name_for_solution(problem: Problem, config):
         return "{}_{}_{}.txt".format(config["solving"]["file_name"].split(".")[0],
-                                     problem.index, int(config["boundary"] * 10))
+                                     problem.index+1, int(config["boundary"] * 10))

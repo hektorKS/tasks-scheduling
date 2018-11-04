@@ -1,3 +1,5 @@
 .idea
 __pycache__
 tasks-scheduling.iml
+resources/solutions/
+resources/validation/

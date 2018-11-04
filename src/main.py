@@ -15,8 +15,8 @@ def solving(config):
     problems = ProblemsReader.read(problems_file_path, config["boundary"])
     # solve problem
     for index in config["solving"]["problems"]:
-        problem = problems[index]
-        solution = ProblemSolver.solve_with_permutations(problem)
+        problem = problems[index - 1]
+        solution = ProblemSolver.solve(problem)
         # save solution
         solution_file_name = Solution.get_file_name_for_solution(problem, config)
         solution_file_path = PathResolver.get_solution_file_absolute_path(solution_file_name)

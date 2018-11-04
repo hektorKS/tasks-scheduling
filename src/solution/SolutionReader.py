@@ -34,7 +34,7 @@ class SolutionReader:
     def get_problem(file_path: str):
         file_name_elements = file_path.split("/")[-1].split("_")
         file_name = file_name_elements[0] + ".txt"
-        problem_number = int(file_name_elements[1])
+        problem_number = int(file_name_elements[1]) - 1
         boundary = int(file_name_elements[2].split(".")[0]) / 10.0
         absolute_file_name = PathResolver.get_problem_file_absolute_path(file_name)
         return ProblemsReader.read(absolute_file_name, boundary)[problem_number]
