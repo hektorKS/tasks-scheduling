@@ -16,6 +16,12 @@ class Problem:
         data = list(map(lambda element: int(element), filtered_line_data))
         self.tasks.append(Task(index, data[0], data[1], data[2]))
 
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
+    def __ne__(self, other):
+        return not self == other
+
     def __str__(self):
         return \
             "Problem(\n  repr: [{}],\n  tasks: {},\n  common_due_date: {},\n  starting_point: {},\n  index: {}\n)" \

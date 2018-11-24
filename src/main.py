@@ -3,6 +3,7 @@ import time
 import PathResolver
 from config.ConfigLoader import ConfigLoader
 from problem.ProblemsReader import ProblemsReader
+from problemsolving.HeuristicProblemSolver import HeuristicProblemSolver
 from problemsolving.ProblemSolver import ProblemSolver
 from solution.Solution import Solution
 from solution.SolutionReader import SolutionReader
@@ -20,6 +21,12 @@ def solving(config):
         problem = problems[index - 1]
         start_time = time.time()
         solution = ProblemSolver.solve(problem)
+        # Heuristic solving
+        if config["solving"]["use_heuristic"]:
+            processing_time = config["heuristic"]["processing_time"]
+            max_tabu_list_size = config["heuristic"]["max_tabu_list_size"]
+            heuristic_problem_solver = HeuristicProblemSolver(start_time, processing_time, max_tabu_list_size)
+            solution = heuristic_problem_solver.solve(solution.problem)
         print("Processing time[{}]: {}s".format(index, round(time.time() - start_time, 5)))
         # save solution
         solution_file_name = Solution.get_file_name_for_solution(problem, config)
