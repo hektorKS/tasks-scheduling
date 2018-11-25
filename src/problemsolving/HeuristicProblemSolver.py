@@ -31,13 +31,8 @@ class HeuristicProblemSolver:
     def __iteration(self):
         # Filter neighbours from tabu list
         _neighbours = list(filter(lambda item: item not in self.tabu_list, self.__get_neighbors(self.best_candidate)))
-
-        # Filter neighbours with not better result
         _best_candidate_fitness = self.__fitness(self.best_candidate)
         # _neighbours_fitness = list(map(lambda item: self.__fitness_with_change(self.best_candidate, item), _neighbours))
-
-        if len(_neighbours) == 0:
-            return
 
         _best_neighbour = _neighbours[0]
         for neighbour in _neighbours:

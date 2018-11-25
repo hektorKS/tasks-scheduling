@@ -26,3 +26,7 @@ Name, Last name, album number
 
 // Lab5
 Solutions space searching, meta heuristics or branch&bound
+
+Problems:
+1. Tabu list size + what to put inside?
+2. How to find neighbours?
