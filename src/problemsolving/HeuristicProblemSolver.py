@@ -4,6 +4,9 @@ from collections import deque
 
 from problem.Problem import Problem
 from problemsolving.CostCounter import CostCounter
+from problemsolving.entities.Entity import Entity
+from problemsolving.entities.Move import Move
+from problemsolving.entities.Swap import Swap
 from solution.Solution import Solution
 
 
@@ -20,29 +23,37 @@ class HeuristicProblemSolver:
     def solve(self, problem: Problem):
         self.best = copy.deepcopy(problem)
         self.best_candidate = problem
-        self.tabu_list.append(self.best_candidate)
+        self.tabu_list.append(copy.deepcopy(problem))
         while time.time() - self.start_time < self.processing_time:
             self.__iteration()
         return Solution(self.best, CostCounter.count(self.best))
 
     def __iteration(self):
+        # Filter neighbours from tabu list
         _neighbours = list(filter(lambda item: item not in self.tabu_list, self.__get_neighbors(self.best_candidate)))
-        _neighbours_fitness = list(map(lambda item: self.__fitness(item), _neighbours))
 
-        _new_best_candidate = _neighbours[0]
-        for candidate in _neighbours:
-            if self.__fitness(candidate) < self.__fitness(_new_best_candidate):
-                _new_best_candidate = candidate
+        # Filter neighbours with not better result
+        _best_candidate_fitness = self.__fitness(self.best_candidate)
+        # _neighbours_fitness = list(map(lambda item: self.__fitness_with_change(self.best_candidate, item), _neighbours))
 
-        self.best_candidate = _new_best_candidate
+        if len(_neighbours) == 0:
+            return
 
-        # print("New best: {}".format(self.best_candidate))
-        print("New best solution: {}".format(CostCounter.count(self.best_candidate)))
+        _best_neighbour = _neighbours[0]
+        for neighbour in _neighbours:
+            _old = self.__fitness_with_change(self.best_candidate, _best_neighbour)
+            _new = self.__fitness_with_change(self.best_candidate, neighbour)
+            if _new < _old and _new != _best_candidate_fitness:
+                _best_neighbour = neighbour
+
+        self.best_candidate = _best_neighbour.apply_to_problem(self.best_candidate)
+
+        print("New best solution: {}".format(self.__fitness(self.best_candidate)))
 
         if self.__fitness(self.best_candidate) < self.__fitness(self.best):
             self.best = copy.deepcopy(self.best_candidate)
 
-        self.tabu_list.append(self.best_candidate)
+        self.tabu_list.append(_best_neighbour.to_tabu())
 
         if len(self.tabu_list) > self.max_tabu_list_size:
             self.tabu_list.popleft()
@@ -53,28 +64,24 @@ class HeuristicProblemSolver:
 
         # One to left
         if _problem.starting_point > 0:
-            neighbour = copy.deepcopy(_problem)
-            neighbour.starting_point = neighbour.starting_point - 1
-            neighbours.append(neighbour)
+            for index in range(1, _problem.starting_point + 1):
+                neighbours.append(Move(index * (-1)))
 
         # One to right
-        neighbour = copy.deepcopy(_problem)
-        neighbour.starting_point = neighbour.starting_point + 1
-        neighbours.append(neighbour)
+        neighbours.append(Move(1))
 
         # Swapped positions
         for swap_distance in range(1):
             for index in range(swap_distance + 1, len(_problem.tasks)):
-                neighbours.append(self.__copy_with_swapped_positions(_problem, index - 1, index))
+                neighbours.append(Swap(index - 1, index))
 
         return neighbours
 
-    def __copy_with_swapped_positions(self, problem: Problem, position_x: int, position_y: int):
-        problem_copy = copy.deepcopy(problem)
-        task = problem_copy.tasks[position_x]
-        problem_copy.tasks[position_x] = problem_copy.tasks[position_y]
-        problem_copy.tasks[position_y] = task
-        return problem_copy
-
     def __fitness(self, problem: Problem):
         return CostCounter.count(problem)
+
+    def __fitness_with_change(self, problem: Problem, entity: Entity):
+        entity.apply_to_problem(problem)
+        result = CostCounter.count(problem)
+        entity.recall_from_problem(problem)
+        return result
