@@ -35,11 +35,12 @@ class HeuristicProblemSolver:
         # _neighbours_fitness = list(map(lambda item: self.__fitness_with_change(self.best_candidate, item), _neighbours))
 
         _best_neighbour = _neighbours[0]
+        _old = self.__fitness_with_change(self.best_candidate, _best_neighbour)
         for neighbour in _neighbours:
-            _old = self.__fitness_with_change(self.best_candidate, _best_neighbour)
             _new = self.__fitness_with_change(self.best_candidate, neighbour)
-            if _new < _old and _new != _best_candidate_fitness:
+            if _new < _old:
                 _best_neighbour = neighbour
+                _old = _new
 
         self.best_candidate = _best_neighbour.apply_to_problem(self.best_candidate)
 
