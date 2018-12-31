@@ -25,7 +25,6 @@ class HeuristicProblemSolver:
     def solve(self, problem: Problem):
         self.best = copy.deepcopy(problem)
         self.best_candidate = problem
-        self.tabu_list.append(copy.deepcopy(problem))
         while time.time() - self.start_time < self.processing_time and self.empty_iterations < 100:
             self.__iteration()
             self.iterations = self.iterations + 1
@@ -44,18 +43,20 @@ class HeuristicProblemSolver:
                 _best_neighbour = neighbour
                 _old = _new
 
+        # Set new best candidate (might be worse then previous one)
         self.best_candidate = _best_neighbour.apply_to_problem(self.best_candidate)
 
-        print("New best solution: {}".format(self.__fitness(self.best_candidate)))
-
+        # Set new best solution if appeared or increase empty iterations number
         if self.__fitness(self.best_candidate) < self.__fitness(self.best):
             self.best = copy.deepcopy(self.best_candidate)
             self.empty_iterations = 0
         else:
             self.empty_iterations = self.empty_iterations + 1
 
+        # Add to tabu list
         self.tabu_list.append(_best_neighbour.to_tabu())
 
+        # Control tabu list size
         if len(self.tabu_list) > self.max_tabu_list_size:
             self.tabu_list.popleft()
 
@@ -76,7 +77,7 @@ class HeuristicProblemSolver:
         if tasks_number > 100:
             shift = int((self.iterations % (int(tasks_number / range_size) - 1)) * range_size)
             swap_start = 1 + shift
-            swap_end = swap_start + range_size - 1 + self.iterations % 2
+            swap_end = swap_start + range_size
             if swap_end > tasks_number:
                 swap_end = tasks_number
         else:
