@@ -18,19 +18,24 @@ class HeuristicProblemSolver:
         self.tabu_list = deque([])
         self.start_time = start_time
         self.processing_time = processing_time
+        self.iterations = 0
+        self.empty_iterations = 0
         self.max_tabu_list_size = max_tabu_list_size
 
     def solve(self, problem: Problem):
         self.best = copy.deepcopy(problem)
         self.best_candidate = problem
         self.tabu_list.append(copy.deepcopy(problem))
-        while time.time() - self.start_time < self.processing_time:
+        while time.time() - self.start_time < self.processing_time and self.empty_iterations < 100:
             self.__iteration()
+            self.iterations = self.iterations + 1
         return Solution(self.best, CostCounter.count(self.best))
 
     def __iteration(self):
+        # Get neighbors and filter ones from tabu list
         _neighbours = list(filter(lambda item: item not in self.tabu_list, self.__get_neighbors(self.best_candidate)))
 
+        # Find best neighbor
         _best_neighbour = _neighbours[0]
         _old = self.__fitness_with_change(self.best_candidate, _best_neighbour)
         for neighbour in _neighbours:
@@ -45,6 +50,9 @@ class HeuristicProblemSolver:
 
         if self.__fitness(self.best_candidate) < self.__fitness(self.best):
             self.best = copy.deepcopy(self.best_candidate)
+            self.empty_iterations = 0
+        else:
+            self.empty_iterations = self.empty_iterations + 1
 
         self.tabu_list.append(_best_neighbour.to_tabu())
 
@@ -57,16 +65,27 @@ class HeuristicProblemSolver:
 
         # One to left
         if _problem.starting_point > 0:
-            for index in range(1, _problem.starting_point + 1):
-                neighbours.append(Move(index * (-1)))
+            neighbours.append(Move(-1))
 
         # One to right
         neighbours.append(Move(1))
 
+        # Get proper range of swapping
+        range_size = 25
+        tasks_number = len(_problem.tasks)
+        if tasks_number > 100:
+            shift = int((self.iterations % (int(tasks_number / range_size) - 1)) * range_size)
+            swap_start = 1 + shift
+            swap_end = swap_start + range_size - 1 + self.iterations % 2
+            if swap_end > tasks_number:
+                swap_end = tasks_number
+        else:
+            swap_start = 1
+            swap_end = tasks_number
+
         # Swapped positions
-        for swap_distance in range(1):
-            for index in range(swap_distance + 1, len(_problem.tasks)):
-                neighbours.append(Swap(index - 1, index))
+        for index in range(swap_start, swap_end):
+            neighbours.append(Swap(index - 1, index))
 
         return neighbours
 
