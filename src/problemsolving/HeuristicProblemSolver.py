@@ -43,7 +43,7 @@ class HeuristicProblemSolver:
                 _best_neighbour = neighbour
                 _old = _new
 
-        # Set new best candidate (might be worse then previous one)
+        # Set new best candidate (might be worse then the one from previous iteration)
         self.best_candidate = _best_neighbour.apply_to_problem(self.best_candidate)
 
         # Set new best solution if appeared or increase empty iterations number
